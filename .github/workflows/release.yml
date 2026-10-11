@@ -126,16 +126,22 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           POLICY_PUBLIC_KEY: ${{ vars.POLICY_PUBLIC_KEY }}
           ADMIN_POLICY_PRIVATE_KEY: ${{ secrets.ADMIN_POLICY_PRIVATE_KEY }}
-        run: gradle :app:assembleAdminRelease -PreleaseNumber=$GITHUB_RUN_NUMBER --stacktrace
+          UPDATE_BASE_URL_ADMIN: ${{ vars.UPDATE_BASE_URL_ADMIN }}
+        run: >-
+          gradle :app:assembleAdminRelease
+          -PreleaseNumber=$GITHUB_RUN_NUMBER
+          -PUPDATE_SERVER_ADMIN_URLS="$UPDATE_BASE_URL_ADMIN"
+          --stacktrace
 
       - name: Build Viewer Release APK
         env:
-          RELEASE_STORE_FILE: ${{ github.workspace }}/ci/release-signing.jks
-          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           POLICY_PUBLIC_KEY: ${{ vars.POLICY_PUBLIC_KEY }}
-        run: gradle :app:assembleViewerRelease -PreleaseNumber=$GITHUB_RUN_NUMBER --stacktrace
+          UPDATE_BASE_URL_VIEWER: ${{ vars.UPDATE_BASE_URL_VIEWER }}
+        run: >-
+          gradle :app:assembleViewerRelease
+          -PreleaseNumber=$GITHUB_RUN_NUMBER
+          -PUPDATE_SERVER_VIEWER_URLS="$UPDATE_BASE_URL_VIEWER"
+          --stacktrace
 
       - name: Remove decoded keystore(s)
         if: always()
