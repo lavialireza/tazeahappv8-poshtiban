@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <permission
-        android:name="com.example.bookapp.permission.POLICY_APPLIED"
+        android:name="${policyAppliedPermission}"
         android:protectionLevel="signature" />
-    <uses-permission android:name="com.example.bookapp.permission.POLICY_APPLIED" />
+    <uses-permission android:name="${policyAppliedPermission}" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -15,7 +15,7 @@
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="${appLabel}"
+        android:label="${appLabel}${appLabelSuffix}"
         android:supportsRtl="true">
 
         <activity
@@ -42,9 +42,9 @@
         <receiver
             android:name=".PolicyAppliedReceiver"
             android:exported="true"
-            android:permission="com.example.bookapp.permission.POLICY_APPLIED">
+            android:permission="${policyAppliedPermission}">
             <intent-filter>
-                <action android:name="com.example.bookapp.POLICY_APPLIED" />
+                <action android:name="${policyAppliedAction}" />
             </intent-filter>
         </receiver>
 
