@@ -163,6 +163,13 @@ android {
             setRoot("src/admin")
             assets.setSrcDirs(listOf("src/admin/assets"))
         }
+
+        // آیکن‌های تولیدشده از custom_icons به‌صورت منبع موقت build اضافه می‌شوند.
+        // فایل‌های تولیدشده داخل build/ هستند و سورس اصلی برنامه را آلوده نمی‌کنند.
+        getByName("admin").res.srcDir(layout.buildDirectory.dir("generated/custom-icons/admin/res"))
+        getByName("viewer").res.srcDir(layout.buildDirectory.dir("generated/custom-icons/viewer/res"))
+        maybeCreate("adminQa").res.srcDir(layout.buildDirectory.dir("generated/custom-icons/adminQa/res"))
+        maybeCreate("viewerQa").res.srcDir(layout.buildDirectory.dir("generated/custom-icons/viewerQa/res"))
     }
 
 
@@ -274,6 +281,32 @@ android {
     }
 }
 
+
+// لوگوهای سفارشی: پیش از ادغام منابع هر APK از پوشه custom_icons خوانده می‌شوند.
+// نام فایل‌ها: admin.png، viewer.png، admin_test.png و viewer_test.png.
+val prepareCustomLauncherIcons = tasks.register("prepareCustomLauncherIcons") {
+    val iconInputs = rootProject.file("custom_icons")
+    val generatedIcons = layout.buildDirectory.dir("generated/custom-icons")
+    inputs.dir(iconInputs)
+    outputs.dir(generatedIcons)
+    doLast {
+        exec {
+            commandLine(
+                "java",
+                "-Djava.awt.headless=true",
+                rootProject.file("tools/GenerateLauncherIcons.java").absolutePath,
+                iconInputs.absolutePath,
+                generatedIcons.get().asFile.absolutePath
+            )
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name == "preBuild" || (name.startsWith("merge") && name.endsWith("Resources"))) {
+        dependsOn(prepareCustomLauncherIcons)
+    }
+}
 
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
